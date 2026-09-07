@@ -653,7 +653,10 @@ defmodule WandererKills.Ingest.Killmails.ZkbClient do
   Gets the base URL for zKillboard API calls.
   """
   def base_url do
-    @zkb_base_url
+    :wanderer_kills
+    |> Application.get_env(:zkb, [])
+    |> Keyword.get(:base_url, @zkb_base_url)
+    |> String.trim_trailing("/")
   end
 
   # Note: Response parsing now handled by WandererKills.Http.Client
@@ -721,7 +724,7 @@ defmodule WandererKills.Ingest.Killmails.ZkbClient do
   end
 
   defp fetch_history_with_rate_limit(date) do
-    url = "#{@zkb_base_url}/history/#{date}.json"
+    url = "#{base_url()}/history/#{date}.json"
 
     Logger.debug("Making HTTP request to zkillboard history API",
       url: url,

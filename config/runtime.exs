@@ -94,6 +94,22 @@ config :wanderer_kills, :historical_streaming,
   batch_size: historical_batch_size,
   batch_interval_ms: historical_batch_interval_ms
 
+# Infinit Murder: point live + REST ingest at our kill archive instead of zKill.
+r2z2_base =
+  (System.get_env("R2Z2_BASE_URL") || "https://r2z2.zkillboard.com/ephemeral")
+  |> String.trim_trailing("/")
+
+zkb_base =
+  (System.get_env("ZKB_BASE_URL") || "https://zkillboard.com/api")
+  |> String.trim_trailing("/")
+
+config :wanderer_kills, :r2z2,
+  base_url: r2z2_base,
+  poll_interval_ms: parse_positive_integer!.("R2Z2_POLL_INTERVAL_MS", "150"),
+  idle_interval_ms: parse_positive_integer!.("R2Z2_IDLE_INTERVAL_MS", "6000")
+
+config :wanderer_kills, :zkb, base_url: zkb_base
+
 # Configure URL settings for production deployment
 # Set HOST for the application URL (defaults to localhost)
 # Set SCHEME for the application URL (defaults to https in prod, http otherwise)
